@@ -42,9 +42,16 @@ const questionPool = [
     { text: 'What is semantic HTML?', options: ['HTML with meaningful tags', 'A JavaScript function', 'A CSS module'], correctAnswer: 'HTML with meaningful tags' },
 ];
 
+const shuffleArray = (array) => {
+    return array.sort(() => 0.5 - Math.random());
+};
+
 const getRandomQuestions = (numQuestions) => {
-    const shuffledQuestions = questionPool.sort(() => 0.5 - Math.random());
-    return shuffledQuestions.slice(0, numQuestions);
+    const shuffledQuestions = shuffleArray(questionPool);
+    return shuffledQuestions.slice(0, numQuestions).map(question => ({
+        ...question,
+        options: shuffleArray(question.options)
+    }));
 };
 
 const generateRandomQuizzes = (numQuizzes = 15, questionsPerQuiz = 5) => {
@@ -52,15 +59,9 @@ const generateRandomQuizzes = (numQuizzes = 15, questionsPerQuiz = 5) => {
         id: i + 1,
         title: quizTitles[i % quizTitles.length],
         description: quizDescriptions[i % quizDescriptions.length],
-        questions: getRandomQuestions(questionsPerQuiz).map((q, idx) => ({
-            id: idx + 1,
-            text: q.text,
-            options: q.options,
-            correctAnswer: q.correctAnswer
-        }))
+        questions: getRandomQuestions(questionsPerQuiz)
     }));
 };
 
 export const quizzes = generateRandomQuizzes(15);
-
 export default quizzes;
